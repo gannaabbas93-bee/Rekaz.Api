@@ -47,6 +47,33 @@ app.MapGet("/api/home", () =>
 })
 .WithName("GetHomeData");
 
+// GET /api/availability endpoint
+app.MapGet("/api/availability", (int? serviceId, string? date) =>
+{
+    var sId = serviceId ?? 1;
+    var targetDate = string.IsNullOrWhiteSpace(date) ? DateTime.Today.ToString("yyyy-MM-dd") : date;
+
+    var slots = sId switch
+    {
+        2 => new[] { "09:00 AM", "11:30 AM", "02:00 PM", "04:30 PM", "07:00 PM" },
+        3 => new[] { "10:30 AM", "01:00 PM", "03:30 PM", "06:00 PM" },
+        4 => new[] { "09:30 AM", "12:00 PM", "02:30 PM", "05:00 PM", "08:30 PM" },
+        _ => new[] { "10:00 AM", "12:00 PM", "03:00 PM", "05:30 PM", "08:00 PM" }
+    };
+
+    var response = new AvailabilityResponse(
+        ServiceId: sId,
+        Date: targetDate,
+        AvailableSlots: slots,
+        MessageAr: $"المواعيد المتاحة بتاريخ {targetDate}",
+        MessageEn: $"Available slots on {targetDate}",
+        ServerTime: DateTime.Now
+    );
+
+    return Results.Ok(response);
+})
+.WithName("GetAvailability");
+
 app.Run();
 
 public record HomeResponse(
@@ -66,4 +93,14 @@ public record ServiceItem(
     string Icon,
     string DescriptionAr
 );
+
+public record AvailabilityResponse(
+    int ServiceId,
+    string Date,
+    string[] AvailableSlots,
+    string MessageAr,
+    string MessageEn,
+    DateTime ServerTime
+);
+
 
