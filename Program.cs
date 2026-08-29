@@ -40,7 +40,7 @@ app.MapGet("/api/home", () =>
             new ServiceItem(4, "دعم الدفع الإلكتروني", "Online Payments Support", "⚡", "ربط كامل مع بوابات الدفع الإلكتروني الآمنة")
         },
         ServerTime: DateTime.Now,
-        BackendVersion: "NET 10.0 API"
+        BackendVersion: "NET 9.0 API"
     );
 
     return Results.Ok(response);
