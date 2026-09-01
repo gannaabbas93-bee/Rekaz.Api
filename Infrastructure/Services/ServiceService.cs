@@ -17,6 +17,7 @@ public class ServiceService : IServiceService
             Id = 101,
             FullName = "أحمد محمود",
             BusinessType = "شركة ركاز التقنية",
+            Phone = "0501234567",
             ServiceNameAr = "إدارة الحجوزات",
             ServiceNameEn = "Bookings Management",
             ServiceIcon = "📅",
@@ -29,6 +30,7 @@ public class ServiceService : IServiceService
             Id = 102,
             FullName = "أحمد محمود",
             BusinessType = "شركة ركاز التقنية",
+            Phone = "0501234567",
             ServiceNameAr = "إدارة الاشتراكات",
             ServiceNameEn = "Memberships Management",
             ServiceIcon = "💳",
@@ -41,6 +43,7 @@ public class ServiceService : IServiceService
             Id = 103,
             FullName = "سارة علي",
             BusinessType = "عيادة الأمل",
+            Phone = "0555555555",
             ServiceNameAr = "تقارير وأداء",
             ServiceNameEn = "Reports & Analytics",
             ServiceIcon = "📊",
@@ -112,6 +115,7 @@ public class ServiceService : IServiceService
             Id = newId,
             FullName = dto.FullName,
             BusinessType = dto.BusinessType,
+            Phone = dto.Phone,
             ServiceNameAr = dto.ServiceId == 2 ? "إدارة الاشتراكات" : dto.ServiceId == 3 ? "تقارير وأداء" : "إدارة الحجوزات",
             ServiceNameEn = dto.ServiceId == 2 ? "Memberships Management" : dto.ServiceId == 3 ? "Reports & Analytics" : "Bookings Management",
             ServiceIcon = "📅",
@@ -179,12 +183,13 @@ public class ServiceService : IServiceService
         {
             var results = await _context.Bookings
                 .AsNoTracking()
-                .Where(b => b.Phone == cleanPhone || b.Phone.EndsWith(cleanPhone))
+                .Where(b => b.Phone == cleanPhone || b.Phone.EndsWith(cleanPhone) || cleanPhone.EndsWith(b.Phone))
                 .Select(b => new BookingHistoryDto
                 {
                     Id = b.Id,
                     FullName = b.FullName,
                     BusinessType = b.BusinessType,
+                    Phone = b.Phone,
                     ServiceNameAr = b.Service != null ? b.Service.NameAr : "خدمة عامة",
                     ServiceNameEn = b.Service != null ? b.Service.NameEn : "General Service",
                     ServiceIcon = b.Service != null ? b.Service.Icon : "📅",
@@ -205,6 +210,8 @@ public class ServiceService : IServiceService
             // Failover to memory store
         }
 
-        return FallbackBookings.Where(b => true);
+        return FallbackBookings
+            .Where(b => b.Phone == cleanPhone || b.Phone.EndsWith(cleanPhone) || cleanPhone.EndsWith(b.Phone))
+            .ToList();
     }
 }

@@ -5,6 +5,7 @@ public class BookingHistoryDto
     public int Id { get; set; }
     public string FullName { get; set; } = string.Empty;
     public string BusinessType { get; set; } = string.Empty;
+    public string Phone { get; set; } = string.Empty;
     public string ServiceNameAr { get; set; } = string.Empty;
     public string ServiceNameEn { get; set; } = string.Empty;
     public string ServiceIcon { get; set; } = string.Empty;
