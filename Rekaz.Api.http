@@ -1,6 +1,11 @@
 @Rekaz.Api_HostAddress = http://localhost:5189
 
-GET {{Rekaz.Api_HostAddress}}/weatherforecast/
+### Get Active Services
+GET {{Rekaz.Api_HostAddress}}/api/services
+Accept: application/json
+
+### Get Aggregated Home Data
+GET {{Rekaz.Api_HostAddress}}/api/home
 Accept: application/json
 
 ###

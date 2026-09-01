@@ -5,7 +5,14 @@ using Rekaz.Api.Core.Interfaces;
 
 public class HomeService : IHomeService
 {
-    public Task<HomeDataDto> GetAggregatedHomeDataAsync(int? serviceId, string? date)
+    private readonly IServiceService _serviceService;
+
+    public HomeService(IServiceService serviceService)
+    {
+        _serviceService = serviceService;
+    }
+
+    public async Task<HomeDataDto> GetAggregatedHomeDataAsync(int? serviceId, string? date)
     {
         var sId = serviceId ?? 1;
         var targetDate = string.IsNullOrWhiteSpace(date) ? DateTime.Today.ToString("yyyy-MM-dd") : date;
@@ -18,23 +25,15 @@ public class HomeService : IHomeService
             _ => new List<string> { "10:00 AM", "12:00 PM", "03:00 PM", "05:30 PM", "08:00 PM" }
         };
 
-        var services = new List<ServiceDto>
-        {
-            new ServiceDto(1, "إدارة الحجوزات", "Bookings Management", "📅", "حجز وإدارة الجلسات والخدمات بسهولة وسلاسة"),
-            new ServiceDto(2, "إدارة الاشتراكات", "Memberships Management", "💳", "تتبع خطط الاشتراكات والعضويات والتجديد التلقائي"),
-            new ServiceDto(3, "تقارير وأداء", "Reports & Analytics", "📊", "تحليلات دقيقة وإحصائيات مباشرة لمتابعة أداء العمل"),
-            new ServiceDto(4, "دعم الدفع الإلكتروني", "Online Payments Support", "⚡", "ربط كامل مع بوابات الدفع الإلكتروني الآمنة")
-        };
+        var servicesList = await _serviceService.GetActiveServicesAsync();
 
-        var homeData = new HomeDataDto
+        return new HomeDataDto
         {
             Headline = "منصة إدارة الحجوزات والاشتراكات الذكية",
             Subtitle = "منصة إدارة الحجوزات والاشتراكات الذكية التي تمنح أعمالك الكفاءة والنمو",
             RotatingWords = new List<string> { "الحجوزات", "الاشتراكات", "Bookings", "Memberships" },
-            Services = services,
+            Services = servicesList.ToList(),
             AvailableSlots = slots
         };
-
-        return Task.FromResult(homeData);
     }
 }
