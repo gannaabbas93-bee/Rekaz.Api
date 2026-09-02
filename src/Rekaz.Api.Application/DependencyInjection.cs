@@ -1,0 +1,16 @@
+namespace Microsoft.Extensions.DependencyInjection;
+
+using Rekaz.Api.Application.Interfaces;
+using Rekaz.Api.Application.Services;
+
+public static class DependencyInjection
+{
+    public static IServiceCollection AddApplication(this IServiceCollection services)
+    {
+        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IServiceService, ServiceService>();
+        services.AddScoped<IHomeService, HomeService>();
+
+        return services;
+    }
+}
