@@ -8,4 +8,6 @@ public interface IServiceService
     Task<AvailabilityDto> GetAvailabilityAsync(int serviceId, string date, CancellationToken cancellationToken = default);
     Task<BookingResponseDto> CreateBookingAsync(CreateBookingDto dto, CancellationToken cancellationToken = default);
     Task<IEnumerable<BookingHistoryDto>> GetBookingHistoryAsync(string phone, CancellationToken cancellationToken = default);
+    Task<BookingResponseDto?> UpdateBookingAsync(int id, UpdateBookingDto dto, CancellationToken cancellationToken = default);
+    Task<bool> DeleteBookingAsync(int id, CancellationToken cancellationToken = default);
 }

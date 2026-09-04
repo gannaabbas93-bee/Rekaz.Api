@@ -31,4 +31,28 @@ public class BookingsController : ControllerBase
         var history = await _serviceService.GetBookingHistoryAsync(phone, cancellationToken);
         return Ok(history);
     }
+
+    [HttpPut("{id}")]
+    [AllowAnonymous]
+    public async Task<ActionResult<BookingResponseDto>> UpdateBooking(int id, [FromBody] UpdateBookingDto dto, CancellationToken cancellationToken)
+    {
+        var response = await _serviceService.UpdateBookingAsync(id, dto, cancellationToken);
+        if (response == null)
+        {
+            return NotFound(new { message = "Booking not found." });
+        }
+        return Ok(response);
+    }
+
+    [HttpDelete("{id}")]
+    [AllowAnonymous]
+    public async Task<IActionResult> DeleteBooking(int id, CancellationToken cancellationToken)
+    {
+        var success = await _serviceService.DeleteBookingAsync(id, cancellationToken);
+        if (!success)
+        {
+            return NotFound(new { message = "Booking not found." });
+        }
+        return Ok(new { message = "Booking deleted successfully." });
+    }
 }

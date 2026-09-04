@@ -103,4 +103,44 @@ public class ServiceService : IServiceService
             CreatedAt = b.CreatedAt
         });
     }
+
+    public async Task<BookingResponseDto?> UpdateBookingAsync(int id, UpdateBookingDto dto, CancellationToken cancellationToken = default)
+    {
+        var existingBooking = await _bookingRepository.GetByIdAsync(id, cancellationToken);
+        if (existingBooking == null)
+        {
+            return null;
+        }
+
+        existingBooking.FullName = dto.FullName;
+        existingBooking.BusinessType = dto.BusinessType;
+        existingBooking.CountryCode = dto.CountryCode;
+        existingBooking.Phone = dto.Phone;
+        existingBooking.ServiceId = dto.ServiceId;
+        existingBooking.BookingDate = dto.BookingDate;
+        existingBooking.SelectedSlot = dto.SelectedSlot;
+
+        var updated = await _bookingRepository.UpdateAsync(existingBooking, cancellationToken);
+        if (updated == null)
+        {
+            return null;
+        }
+
+        return new BookingResponseDto
+        {
+            Id = updated.Id,
+            FullName = updated.FullName,
+            ServiceId = updated.ServiceId,
+            BookingDate = updated.BookingDate,
+            SelectedSlot = updated.SelectedSlot,
+            MessageAr = "تم تعديل حجزك بنجاح!",
+            MessageEn = "Booking updated successfully!",
+            CreatedAt = updated.CreatedAt
+        };
+    }
+
+    public async Task<bool> DeleteBookingAsync(int id, CancellationToken cancellationToken = default)
+    {
+        return await _bookingRepository.DeleteAsync(id, cancellationToken);
+    }
 }

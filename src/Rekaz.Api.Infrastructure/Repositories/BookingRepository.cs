@@ -105,4 +105,73 @@ public class BookingRepository : IBookingRepository
             .OrderByDescending(b => b.CreatedAt)
             .ToList();
     }
+
+    public async Task<Booking?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var booking = await _context.Bookings
+                .Include(b => b.Service)
+                .FirstOrDefaultAsync(b => b.Id == id, cancellationToken);
+
+            if (booking != null)
+            {
+                return booking;
+            }
+        }
+        catch
+        {
+            // Failover
+        }
+
+        return FallbackBookings.FirstOrDefault(b => b.Id == id);
+    }
+
+    public async Task<Booking?> UpdateAsync(Booking booking, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            _context.Bookings.Update(booking);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+        catch
+        {
+            // Failover
+        }
+
+        var index = FallbackBookings.FindIndex(b => b.Id == booking.Id);
+        if (index >= 0)
+        {
+            FallbackBookings[index] = booking;
+        }
+
+        return booking;
+    }
+
+    public async Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default)
+    {
+        var deleted = false;
+        try
+        {
+            var entity = await _context.Bookings.FindAsync(new object[] { id }, cancellationToken);
+            if (entity != null)
+            {
+                _context.Bookings.Remove(entity);
+                await _context.SaveChangesAsync(cancellationToken);
+                deleted = true;
+            }
+        }
+        catch
+        {
+            // Failover
+        }
+
+        var count = FallbackBookings.RemoveAll(b => b.Id == id);
+        if (count > 0)
+        {
+            deleted = true;
+        }
+
+        return deleted;
+    }
 }
